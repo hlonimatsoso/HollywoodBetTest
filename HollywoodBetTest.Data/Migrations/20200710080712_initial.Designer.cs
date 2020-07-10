@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HollywoodBetTest.Data.Migrations
 {
     [DbContext(typeof(HollywoodBetTestContext))]
-    [Migration("20200707152457_Initial")]
-    partial class Initial
+    [Migration("20200710080712_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

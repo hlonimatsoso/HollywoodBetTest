@@ -52,19 +52,15 @@ namespace HollywoodBetTest.IdentityServer
 
                 // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                 options.EmitStaticAudienceClaim = true;
-            }).AddInMemoryIdentityResources(Config.GetIdentityResources())
-             .AddInMemoryApiResources(Config.GetApiResources())
-             .AddInMemoryClients(Config.GetClients())
-             .AddAspNetIdentity<HollywoodBetTestUser>();
-            // .AddConfigurationStore(options =>
-            // {
-            //     options.ConfigureDbContext = b => b.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-            // })
-            //.AddOperationalStore(options =>
-            //{
-            //    options.ConfigureDbContext = b => b.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-            //    options.EnableTokenCleanup = true;
-            //});
+            }).AddConfigurationStore(options =>
+             {
+                 options.ConfigureDbContext = b => b.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+             })
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = b => b.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                options.EnableTokenCleanup = true;
+            });
 
 
             // not recommended for production - you need to store your key material somewhere secure
