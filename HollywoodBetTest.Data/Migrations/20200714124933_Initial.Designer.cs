@@ -4,14 +4,16 @@ using HollywoodBetTest.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HollywoodBetTest.Data.Migrations
 {
     [DbContext(typeof(HollywoodBetTestContext))]
-    partial class HollywoodBetTestContextModelSnapshot : ModelSnapshot
+    [Migration("20200714124933_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace HollywoodBetTest.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)")
                         .HasMaxLength(50);
-
-                    b.Property<short>("EventDetailNumber")
-                        .HasColumnType("smallint");
 
                     b.Property<decimal>("EventDetailOdd")
                         .HasColumnType("decimal(18, 7)");

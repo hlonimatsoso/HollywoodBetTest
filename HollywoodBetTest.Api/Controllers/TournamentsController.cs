@@ -56,8 +56,8 @@ namespace HollywoodBetTest.Api.Controllers
         {
             if (tournament == null)
                 throw new Exception("Tournament is null");
-            
-            if(tournament.TournamentID==0)
+
+            if (tournament.TournamentID == 0)
             {
                 this._db.Tournaments.Add(tournament);
                 this._db.SaveChanges();
@@ -72,9 +72,7 @@ namespace HollywoodBetTest.Api.Controllers
             }
 
 
-            
-
-            return Ok(); // should actually return the created status code 201
+            return Ok(tournament); // should actually return the created status code 201
         }
 
         [HttpPut("")]
@@ -82,7 +80,7 @@ namespace HollywoodBetTest.Api.Controllers
         {
             if (tournament == null)
                 throw new Exception("Tournament is null");
-          
+
 
             return NoContent(); // should actually return the updated status code 204
         }
@@ -90,18 +88,24 @@ namespace HollywoodBetTest.Api.Controllers
         [HttpDelete("Delete")]
         public IActionResult Delete(Tournament[] tournaments)
         {
-            Tournament dbTournament = null;
-
-            foreach (Tournament tournament in tournaments)
+            try
             {
-                dbTournament =  this._db.Tournaments.Find(tournament.TournamentID);
-                if (dbTournament != null)
-                    this._db.Tournaments.Remove(dbTournament);
+                Tournament dbTournament = null;
+                foreach (Tournament tournament in tournaments)
+                {
+                    dbTournament = this._db.Tournaments.Find(tournament.TournamentID);
+                    if (dbTournament != null)
+                        this._db.Tournaments.Remove(dbTournament);
+                }
+
+                this._db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
             }
 
-            this._db.SaveChanges();
-
-            return NoContent(); // should actually return the updated status code 204
+            return Ok(true); // should actually return the updated status code 204
         }
     }
 }

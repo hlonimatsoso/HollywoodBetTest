@@ -11,6 +11,8 @@ namespace HollywoodBetTest.Models
         [Key]
         public long EventDetailID { get; set; }
 
+
+        [Required]
         [ForeignKey("Event")]
         public long EventID { get; set; }
         public Event Event { get; set; }
@@ -27,9 +29,16 @@ namespace HollywoodBetTest.Models
         public string EventDetailName { get; set; }
 
         [Required]
+        public Int16 EventDetailNumber { get; set; }
+
+        [Required]
         [Column(TypeName = "decimal(18, 7)")]
         public decimal EventDetailOdd { get; set; }
 
+        [Required]
         public Int16 FinishingPosition { get; set; }
+
+        [Required]
+        public bool FirstTimer { get; set; }
     }
 }

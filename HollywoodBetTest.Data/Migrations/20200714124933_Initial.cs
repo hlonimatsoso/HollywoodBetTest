@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HollywoodBetTest.Data.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -212,7 +212,8 @@ namespace HollywoodBetTest.Data.Migrations
                     EventDetailStatusID = table.Column<short>(nullable: false),
                     EventDetailName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     EventDetailOdd = table.Column<decimal>(type: "decimal(18, 7)", nullable: false),
-                    FinishingPosition = table.Column<short>(nullable: false)
+                    FinishingPosition = table.Column<short>(nullable: false),
+                    FirstTimer = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
