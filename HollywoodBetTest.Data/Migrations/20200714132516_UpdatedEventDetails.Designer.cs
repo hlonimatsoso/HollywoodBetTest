@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HollywoodBetTest.Data.Migrations
 {
     [DbContext(typeof(HollywoodBetTestContext))]
-    [Migration("20200707152457_Initial")]
-    partial class Initial
+    [Migration("20200714132516_UpdatedEventDetails")]
+    partial class UpdatedEventDetails
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,6 +67,9 @@ namespace HollywoodBetTest.Data.Migrations
                         .HasColumnType("varchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<short>("EventDetailNumber")
+                        .HasColumnType("smallint");
+
                     b.Property<decimal>("EventDetailOdd")
                         .HasColumnType("decimal(18, 7)");
 
@@ -78,6 +81,9 @@ namespace HollywoodBetTest.Data.Migrations
 
                     b.Property<short>("FinishingPosition")
                         .HasColumnType("smallint");
+
+                    b.Property<bool>("FirstTimer")
+                        .HasColumnType("bit");
 
                     b.HasKey("EventDetailID");
 

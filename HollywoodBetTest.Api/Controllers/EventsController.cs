@@ -63,7 +63,7 @@ namespace HollywoodBetTest.Api.Controllers
             return Post(@event); // should actually return the updated status code 204
         }
 
-        [HttpDelete("")]
+        [HttpDelete("Delete")]
         public IActionResult Delete(Event[] @events)
         {
             Event dbEvent = null;
