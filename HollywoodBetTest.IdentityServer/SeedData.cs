@@ -188,14 +188,15 @@ namespace HollywoodBetTest.IdentityServer
             {
                 if (!roleMgr.RoleExistsAsync(role.Name).Result)
                 {
-                    roleMgr.CreateAsync(role);
+                    roleMgr.CreateAsync(role).Wait();
+                    configContext.SaveChanges();
+
                 }
                 //    if (!configContext.Roles.Any(c => c.Name == role.Name))
                 //{
                 //    configContext.Roles.Add(role);
                 //}
             }
-            //configContext.SaveChanges();
             Console.WriteLine("Done");
 
         }
@@ -218,9 +219,15 @@ namespace HollywoodBetTest.IdentityServer
 
         private static void Migrations(PersistedGrantDbContext grantsContext, ConfigurationDbContext configContext, HollywoodBetTestContext hollywoodBetContext)
         {
+            Console.WriteLine("Migrating grants");
+
             grantsContext.Database.Migrate();
 
+            Console.WriteLine("Migrating configuration");
+
             configContext.Database.Migrate();
+
+            Console.WriteLine("Migrating main tables");
 
             hollywoodBetContext.Database.Migrate();
 

@@ -36,18 +36,21 @@ namespace HollywoodBetTest.Api
 
             services.AddControllers();
 
+            services.AddDbContext<HollywoodBetTestContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddAuthentication("token")
-           .AddJwtBearer("token", options =>
-           {
-               options.Authority = "https://localhost:10000";
-               options.Audience = "api1";
-           });
+            .AddJwtBearer("token", options =>
+            {
+                options.Authority = "https://localhost:10000";
+                options.Audience = "api1";
+            });
 
 
 
-            //services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-            //.AllowAnyMethod()
-            //.AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()));
         }
 
 
@@ -58,7 +61,7 @@ namespace HollywoodBetTest.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            //app.UseCors("AllowAll");
+            app.UseCors("AllowAll");
 
 
             app.UseHttpsRedirection();
@@ -71,7 +74,9 @@ namespace HollywoodBetTest.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers().RequireAuthorization();
+                //endpoints.MapControllers().RequireAuthorization();
+                endpoints.MapControllers();
+
             });
         }
     }
