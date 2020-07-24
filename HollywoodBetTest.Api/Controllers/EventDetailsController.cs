@@ -46,6 +46,12 @@ namespace HollywoodBetTest.Api.Controllers
             {
                 var dbEventDetail = this._db.EventDetails.Find(@EventDetail.EventDetailID);
                 dbEventDetail.EventDetailName = @EventDetail.EventDetailName;
+                dbEventDetail.EventDetailStatusID = @EventDetail.EventDetailStatusID;
+                dbEventDetail.EventDetailNumber = @EventDetail.EventDetailNumber;
+                dbEventDetail.EventDetailOdd = @EventDetail.EventDetailOdd;
+                dbEventDetail.FinishingPosition = @EventDetail.FinishingPosition;
+                dbEventDetail.FirstTimer = @EventDetail.FirstTimer;
+
 
                 this._db.EventDetails.Update(dbEventDetail);
                 this._db.SaveChanges();
