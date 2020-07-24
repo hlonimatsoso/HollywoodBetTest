@@ -36,24 +36,18 @@ namespace HollywoodBetTest.Api
 
             services.AddControllers();
 
-            services.AddDbContext<HollywoodBetTestContext>(options =>
-             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddIdentity<HollywoodBetTestUser, IdentityRole>()
-               .AddEntityFrameworkStores<HollywoodBetTestContext>()
-               .AddDefaultTokenProviders();
-
-            //services.AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            //services.AddTransient<ITournamentRepository, TournamentRepository>();
-
-            //services.AddTransient(typeof(IBaseService<>), typeof(BaseService<>));
-            //services.AddTransient<ITournamentService, TournamentService>();
+            services.AddAuthentication("token")
+           .AddJwtBearer("token", options =>
+           {
+               options.Authority = "https://localhost:10000";
+               options.Audience = "api1";
+           });
 
 
 
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()));
+            //services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            //.AllowAnyMethod()
+            //.AllowAnyHeader()));
         }
 
 
@@ -64,18 +58,20 @@ namespace HollywoodBetTest.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("AllowAll");
+            //app.UseCors("AllowAll");
 
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireAuthorization();
             });
         }
     }

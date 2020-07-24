@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HollywoodBetTest.Data.Migrations
 {
     [DbContext(typeof(HollywoodBetTestContext))]
-    [Migration("20200714132516_UpdatedEventDetails")]
-    partial class UpdatedEventDetails
+    [Migration("20200723220343_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -118,6 +118,12 @@ namespace HollywoodBetTest.Data.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<byte>("Age")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

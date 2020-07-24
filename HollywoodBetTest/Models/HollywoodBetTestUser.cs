@@ -7,6 +7,8 @@ namespace HollywoodBetTest.Models
 {
     public class HollywoodBetTestUser: IdentityUser
     {
-        //public string Name { get; set; }
+        public string City { get; set; }
+        public byte Age { get; set; }
+
     }
 }

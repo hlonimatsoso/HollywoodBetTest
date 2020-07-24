@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HollywoodBetTest.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,7 +39,9 @@ namespace HollywoodBetTest.Data.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    City = table.Column<string>(nullable: true),
+                    Age = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,6 +213,7 @@ namespace HollywoodBetTest.Data.Migrations
                     EventID = table.Column<long>(nullable: false),
                     EventDetailStatusID = table.Column<short>(nullable: false),
                     EventDetailName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    EventDetailNumber = table.Column<short>(nullable: false),
                     EventDetailOdd = table.Column<decimal>(type: "decimal(18, 7)", nullable: false),
                     FinishingPosition = table.Column<short>(nullable: false),
                     FirstTimer = table.Column<bool>(nullable: false)
