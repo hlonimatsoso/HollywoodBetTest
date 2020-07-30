@@ -21,8 +21,8 @@ namespace HollywoodBetTest.IdentityServer
                 new IdentityResources.OpenId(),
                 new IdentityResources.Email(),
                 new IdentityResources.Profile(),
-                new IdentityResource("Role",new List<string>{Roles.Admin,Roles.Consumer, Roles.Manager }),
-                new IdentityResource("Custom","Extra User Info",new List<string>{"nickName", "age","kasi" })
+                new IdentityResource("role",new List<string>{"role" }),
+                new IdentityResource("custom","Extra User Info",new List<string>{"nickName", "religion" })
             };
         }
 
@@ -30,15 +30,45 @@ namespace HollywoodBetTest.IdentityServer
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "Resource 1 API")
+                new ApiResource("tournaments", "Access to tournaments")
                 {
-                    Scopes =  new List<string> { "api1.read", "api1.write", "api1.delete" }
+                    UserClaims =  new List<string> {
+                        "tournaments.read",
+                        "tournaments.write",
+                        "tournaments.delete"
+                    },
+                    Scopes =  new List<string> { "tournaments" }
                 },
-                new ApiResource("api2", "Resource 2 API")
+                new ApiResource("events", "Access to events")
                 {
-                    Scopes =  new List<string> { "api2.read", "api2.write", "api2.delete" }
+                    UserClaims =  new List<string> {
+                        "events.read",
+                        "events.write",
+                        "events.delete"
+                    },
+                    Scopes =  new List<string> { "events" }
+                },
+                new ApiResource("horses", "Access to horses")
+                {
+                    UserClaims =  new List<string> {
+                        "horses.read",
+                        "horses.write",
+                        "horses.delete"
+                    },
+                    Scopes =  new List<string> { "horses" }
                 }
             };
+        }
+
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new[]
+            {
+            new ApiScope("tournaments", "Access to tournaments"),
+            new ApiScope("events", "Access to events"),
+            new ApiScope("horses", "Access to horses")
+
+        };
         }
 
         public static IEnumerable<Client> GetClients()
@@ -50,7 +80,7 @@ namespace HollywoodBetTest.IdentityServer
                     ClientId = "hollywoodbet",
                     ClientName = "Hollywood Bet Test Angular App",
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowedScopes = { "openid", "profile", "email","role","custom", "api1", "api2" },
+                    AllowedScopes = { "openid", "profile", "email","role","custom", "tournaments", "events","horses" },
                     RedirectUris = {"http://localhost:12000/auth-callback"},
                     PostLogoutRedirectUris = {"http://localhost:12000/"},
                     AllowedCorsOrigins = {"http://localhost:12000"},
@@ -63,8 +93,13 @@ namespace HollywoodBetTest.IdentityServer
         internal static IEnumerable<IdentityRole> GetRoles()
         {
             return new List<IdentityRole> {
-               new IdentityRole(Roles.Admin),new IdentityRole(Roles.Consumer),new IdentityRole(Roles.Manager)
+               new IdentityRole(Roles.Admin),new IdentityRole(Roles.Customer),new IdentityRole(Roles.Manager)
             };
+        }
+
+        internal static IEnumerable<string> GetEventDetailStatus()
+        {
+            return new List<string> {"Active","In-Active"};
         }
 
         public static IEnumerable<HollywoodBetTestUser> GetUsers()
@@ -107,17 +142,20 @@ namespace HollywoodBetTest.IdentityServer
             retVal.Add("admin", new List<Claim> {
                 new Claim(JwtClaimTypes.Name, "Administrator"),
                 new Claim(JwtClaimTypes.GivenName, "Admin"),
-                new Claim(JwtClaimTypes.FamilyName, "The Oracle"),
+                new Claim(JwtClaimTypes.FamilyName, "The Oracles"),
                 new Claim(JwtClaimTypes.WebSite, "http://admin.com"),
-                new Claim("Role", Roles.Admin),
-                new Claim("Age", "33"),
-                new Claim("City", "JHB"),
-                new Claim("api1.read", "true"),
-                new Claim("api1.write", "true"),
-                new Claim("api1.delete", "true"),
-                new Claim("api2.read", "true"),
-                new Claim("api2.write", "true"),
-                new Claim("api2.delete", "true")
+                new Claim("role", Roles.Admin),
+                new Claim("nickName", "The BOSS"),
+                new Claim("religion", "Nation Of Islam"),
+                new Claim("tournaments.read", "true"),
+                new Claim("tournaments.write", "true"),
+                new Claim("tournaments.delete", "true"),
+                new Claim("events.read", "true"),
+                new Claim("events.write", "true"),
+                new Claim("events.delete", "true"),
+                new Claim("horses.read", "true"),
+                new Claim("horses.write", "true"),
+                new Claim("horses.delete", "true")
 
             });
 
@@ -126,26 +164,28 @@ namespace HollywoodBetTest.IdentityServer
                 new Claim(JwtClaimTypes.GivenName, "Alice"),
                 new Claim(JwtClaimTypes.FamilyName, "Smith"),
                 new Claim(JwtClaimTypes.WebSite, "http://alicesmith.com"),
-                new Claim("Role", Roles.Consumer),
-                new Claim("Customer", "true"),
-                new Claim("Age", "25"),
-                new Claim("City", "PTA"),
-                new Claim("api1.read", "true"),
-                new Claim("api2.read", "true")
+                new Claim("Role", Roles.Customer),
+                new Claim("nickName", "Nice Alice"),
+                new Claim("religion", "Christian"),
+                new Claim("tournaments.read", "true"),
+                new Claim("events.read", "true"),
+                new Claim("horses.read", "true")
             });
 
             retVal.Add("bob", new List<Claim> {
-                new Claim(JwtClaimTypes.Name, "Johnny Bravo"),
-                new Claim(JwtClaimTypes.GivenName, "Johnny"),
-                new Claim(JwtClaimTypes.FamilyName, "Bravo"),
+                new Claim(JwtClaimTypes.Name, "Bob SMith"),
+                new Claim(JwtClaimTypes.GivenName, "Bob"),
+                new Claim(JwtClaimTypes.FamilyName, "Smith"),
                 new Claim(JwtClaimTypes.WebSite, "http://bravo.com"),
-                new Claim("Role", Roles.Manager),
-                new Claim("Age", "40"),
-                new Claim("City", "JHB"),
-                new Claim("api1.read", "true"),
-                new Claim("api1.write", "true"),
-                new Claim("api2.read", "true"),
-                new Claim("api2.write", "true")
+                new Claim("role", Roles.Manager),
+                new Claim("nickName", "Jonny Bravo"),
+                new Claim("religion", "Jewish"),
+                new Claim("tournaments.read", "true"),
+                new Claim("tournaments.write", "true"),
+                new Claim("events.read", "true"),
+                new Claim("events.write", "true"),
+                new Claim("horses.read", "true"),
+                new Claim("horses.write", "true")
 
             });
             return retVal;

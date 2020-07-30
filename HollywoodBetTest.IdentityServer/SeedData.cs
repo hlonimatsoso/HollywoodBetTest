@@ -30,7 +30,6 @@ namespace HollywoodBetTest.IdentityServer
 
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                var grantsContext = serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
                 var configContext = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 var hollwoodBetContext = serviceScope.ServiceProvider.GetRequiredService<HollywoodBetTestContext>();
                 var userMgr = serviceScope.ServiceProvider.GetRequiredService<UserManager<HollywoodBetTestUser>>();
@@ -38,22 +37,28 @@ namespace HollywoodBetTest.IdentityServer
 
 
                 // Migrations
-                Migrations(grantsContext, configContext, hollwoodBetContext);
+                Migrations(serviceScope);
 
                 // Sees clients
-                Clients(configContext);
+                Clients(serviceScope);
 
                 // Seed user resources
-                UserResources(configContext);
+                UserResources(serviceScope);
 
                 // Seed api resources
-                ApiResources(configContext);
+                ApiResources(serviceScope);
+
+                // Seed api scopes
+                ApiScopes(serviceScope);
 
                 // Seed roles
-                Roles(hollwoodBetContext, roleMgr);
+                Roles(serviceScope);
 
                 // Seed users
-                Users(hollwoodBetContext, userMgr, roleMgr);
+                Users(serviceScope);
+
+                EventDetailsStatus(serviceScope);
+
 
                 //grantsContext.SaveChanges();
                 //configContext.SaveChanges();
@@ -63,8 +68,22 @@ namespace HollywoodBetTest.IdentityServer
 
         }
 
-        private static void Users(HollywoodBetTestContext hollwoodBetContext, UserManager<HollywoodBetTestUser> userMgr, RoleManager<IdentityRole> roleMgr)
+        private static void EventDetailsStatus(IServiceScope scope)
         {
+            var db = scope.ServiceProvider.GetRequiredService<HollywoodBetTestContext>();
+            Console.WriteLine("Setting up Event Detais Status");
+
+            foreach (var status in Config.GetEventDetailStatus())
+                db.EventDetailStatuses.Add(new EventDetailStatus { EventDetailStatusName = status });
+
+            db.SaveChanges();
+        }
+
+        private static void Users(IServiceScope scope)
+        {
+            var hollwoodBetContext = scope.ServiceProvider.GetRequiredService<HollywoodBetTestContext>();
+            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<HollywoodBetTestUser>>();
+            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             List<Claim> claims;
 
             foreach (var user in Config.GetUsers())
@@ -118,7 +137,7 @@ namespace HollywoodBetTest.IdentityServer
                 case "alice":
                     roleExists = roleMgr.RoleExistsAsync("CUSTOMER").Result;
                     if (roleExists)
-                        result = userMgr.AddToRoleAsync(user, HollywoodBetTest.Models.Roles.Consumer).Result;
+                        result = userMgr.AddToRoleAsync(user, HollywoodBetTest.Models.Roles.Customer).Result;
                     break;
                 case "bob":
                     roleExists = roleMgr.RoleExistsAsync("MANAGER").Result;
@@ -144,8 +163,10 @@ namespace HollywoodBetTest.IdentityServer
             }
         }
 
-        private static void Clients(ConfigurationDbContext configContext)
+        private static void Clients(IServiceScope scope)
         {
+            var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
             Console.Write("Seeding: Clients");
 
             foreach (var client in Config.GetClients())
@@ -160,8 +181,10 @@ namespace HollywoodBetTest.IdentityServer
 
         }
 
-        private static void UserResources(ConfigurationDbContext configContext)
+        private static void UserResources(IServiceScope scope)
         {
+            var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
             Console.Write("Seeding: User Resources...");
 
             foreach (var resource in Config.GetIdentityResources())
@@ -176,11 +199,12 @@ namespace HollywoodBetTest.IdentityServer
 
         }
 
-        private static void Roles(HollywoodBetTestContext configContext, RoleManager<IdentityRole> roleMgr)
+        private static void Roles(IServiceScope scope)
         {
-            Console.Write("Seeding: Roles...");
+            var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            
+            Console.Write("Seeding: Roles...");
 
             //var roleStore = new RoleStore<IdentityRole>(configContext);
 
@@ -201,8 +225,10 @@ namespace HollywoodBetTest.IdentityServer
 
         }
 
-        private static void ApiResources(ConfigurationDbContext configContext)
+        private static void ApiResources(IServiceScope scope)
         {
+            var configContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
             Console.Write("Seeding: API Resources...");
 
             foreach (var resource in Config.GetApiResources())
@@ -217,19 +243,43 @@ namespace HollywoodBetTest.IdentityServer
 
         }
 
-        private static void Migrations(PersistedGrantDbContext grantsContext, ConfigurationDbContext configContext, HollywoodBetTestContext hollywoodBetContext)
+        private static void ApiScopes(IServiceScope serviceScope)
         {
-            Console.WriteLine("Migrating grants");
+            var configContext = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
 
-            grantsContext.Database.Migrate();
+            Console.Write("Seeding: API Scopes...");
 
-            Console.WriteLine("Migrating configuration");
+            foreach (var scope in Config.GetApiScopes())
+            {
+                if (!configContext.ApiScopes.Any(c => c.Name == scope.Name))
+                {
+                    configContext.ApiScopes.Add(scope.ToEntity());
+                }
+            }
+            configContext.SaveChanges();
+            Console.WriteLine("Done");
 
-            configContext.Database.Migrate();
+        }
+
+        private static void Migrations(IServiceScope serviceScope)
+        {
+            var grantsContext = serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+            var configContext = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            var hollywoodBetContext = serviceScope.ServiceProvider.GetRequiredService<HollywoodBetTestContext>();
+
 
             Console.WriteLine("Migrating main tables");
 
             hollywoodBetContext.Database.Migrate();
+
+            Console.WriteLine("Migrating Identity Server configuration");
+
+            configContext.Database.Migrate();
+
+            Console.WriteLine("Migrating Identity Server grants");
+
+            grantsContext.Database.Migrate();
+
 
         }
         //public static void EnsureSeedData(string connectionString)

@@ -38,7 +38,7 @@ namespace HollywoodBetTest.IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Debug("ConfigureServices start");
+            //Log.Debug("ConfigureServices start");
             services.AddControllersWithViews();
 
             services.AddDbContext<HollywoodBetTestContext>(options =>
@@ -46,7 +46,7 @@ namespace HollywoodBetTest.IdentityServer
 
             services.AddIdentity<HollywoodBetTestUser, IdentityRole>()
                 .AddEntityFrameworkStores<HollywoodBetTestContext>()
-                .AddRoles<IdentityRole>()
+                //.AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders();
 
             var migrationsAssembly = typeof(HollywoodBetTestContext).GetTypeInfo().Assembly.GetName().Name;
@@ -88,7 +88,7 @@ namespace HollywoodBetTest.IdentityServer
 
         public void Configure(IApplicationBuilder app)
         {
-            Log.Debug("Configure start");
+            //Log.Debug("Configure start");
 
             // this will do the initial DB population
             bool seed = Configuration.GetSection("Data").GetValue<bool>("SeedSystem");
@@ -111,58 +111,9 @@ namespace HollywoodBetTest.IdentityServer
             {
                 endpoints.MapDefaultControllerRoute();
             });
-            Log.Debug("Configure end");
+            //Log.Debug("Configure end");
 
         }
 
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                Console.WriteLine("Migration: PersistedGrantDbContext");
-                var grantDb = serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-
-                grantDb.Database.Migrate();
-                grantDb.SaveChanges();
-
-                Console.WriteLine("Migration: ConfigurationDbContext");
-
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                context.SaveChanges();
-                if (!context.Clients.Any())
-                {
-                    Console.WriteLine("Seeding: Clients");
-
-                    foreach (var client in Config.GetClients())
-                    {
-                        context.Clients.Add(client.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.IdentityResources.Any())
-                {
-                    Console.WriteLine("Seeding: Identity Resources");
-
-                    foreach (var resource in Config.GetIdentityResources())
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.ApiResources.Any())
-                {
-                    Console.WriteLine("Seeding: API Resources");
-
-                    foreach (var resource in Config.GetApiResources())
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-            }
-        }
     }
 }

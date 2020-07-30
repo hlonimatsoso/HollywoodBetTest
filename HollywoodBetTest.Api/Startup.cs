@@ -43,7 +43,7 @@ namespace HollywoodBetTest.Api
             .AddJwtBearer("token", options =>
             {
                 options.Authority = "https://localhost:10000";
-                options.Audience = "api1";
+                options.Audience = "tournaments";
             });
 
 

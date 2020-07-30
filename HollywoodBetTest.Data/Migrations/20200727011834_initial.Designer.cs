@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HollywoodBetTest.Data.Migrations
 {
     [DbContext(typeof(HollywoodBetTestContext))]
-    [Migration("20200723220343_initial")]
+    [Migration("20200727011834_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
